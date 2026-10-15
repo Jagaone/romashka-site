@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Удаление аккаунта — Ромашка</title>
+<meta name="description" content="Как удалить аккаунт в приложении «Ромашка» и какие данные при этом удаляются.">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<style>
+  /* Onest is the app's only typeface (app/src/main/res/font). */
+  @font-face { font-family: "Onest"; font-weight: 400; font-display: swap; src: url("fonts/onest_regular.ttf") format("truetype"); }
+  @font-face { font-family: "Onest"; font-weight: 500; font-display: swap; src: url("fonts/onest_medium.ttf") format("truetype"); }
+  @font-face { font-family: "Onest"; font-weight: 600; font-display: swap; src: url("fonts/onest_semibold.ttf") format("truetype"); }
+  @font-face { font-family: "Onest"; font-weight: 700; font-display: swap; src: url("fonts/onest_bold.ttf") format("truetype"); }
+
+  /* Tokens mirror app/src/main/java/app/romashka/presentation/common/theme (Color.kt, Shape.kt). */
+  :root {
+    --primary: #FF6400;
+    --primary-pressed: #E05A00;
+    --primary-soft: #FBE3D6;
+    --on-primary: #FFFFFF;
+    --bg: #F1F3F6;
+    --surface: #FFFFFF;
+    --text: #171717;
+    --muted: #737373;
+    --error: #DC2626;
+    --success: #2E7D32;
+    --border: rgba(23, 23, 23, .08);
+    --brand-sky: #BAD5FA;
+    --brand-yellow: #F5D547;
+    --radius-sm: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --primary-soft: #3A2414;
+      --bg: #0A0A0A;
+      --surface: #171717;
+      --text: #FAFAFA;
+      --muted: #A3A3A3;
+      --error: #F87171;
+      --success: #6FBF73;
+      --border: rgba(250, 250, 250, .12);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --primary-soft: #3A2414;
+    --bg: #0A0A0A;
+    --surface: #171717;
+    --text: #FAFAFA;
+    --muted: #A3A3A3;
+    --error: #F87171;
+    --success: #6FBF73;
+    --border: rgba(250, 250, 250, .12);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 16px/1.55 "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--primary); }
+  img { display: block; max-width: 100%; height: auto; }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+
+  /* Hide the language that is not selected. */
+  html[lang="ru"] [lang="en"]:not(html), html[lang="en"] [lang="ru"]:not(html) { display: none !important; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 20px 0 8px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .brand img { width: 48px; height: 48px; border-radius: 14px; }
+  .brand b { font-weight: 700; font-size: 20px; color: var(--primary); letter-spacing: -.01em; }
+
+  /* Segmented control styled like the app's theme chips (Profile → Оформление). */
+  .seg { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface); border-radius: 999px; box-shadow: var(--shadow); }
+  .seg button {
+    font: 500 14px/1 "Onest", system-ui, sans-serif; color: var(--muted);
+    background: transparent; border: 2px solid transparent; border-radius: 999px;
+    padding: 8px 14px; cursor: pointer;
+  }
+  .seg button[aria-pressed="true"] { color: var(--primary); background: var(--primary-soft); border-color: var(--primary); }
+
+  .hero {
+    margin-top: 16px;
+    padding: 32px 24px;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(180deg, #FD7B2E 0%, #F0DDD8 62%, var(--surface) 100%);
+    color: #171717;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .hero { background: linear-gradient(180deg, #FD7B2E 0%, #5A3422 60%, var(--surface) 100%); color: var(--text); }
+  }
+  :root[data-theme="dark"] .hero { background: linear-gradient(180deg, #FD7B2E 0%, #5A3422 60%, var(--surface) 100%); color: var(--text); }
+  .hero h1 { margin: 0 0 12px; font-size: clamp(28px, 6vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -.02em; }
+  .hero p { margin: 0; max-width: 620px; font-size: 18px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px;
+    padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .85); color: #171717;
+    font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+  }
+
+  h2 { font-size: 24px; line-height: 1.2; font-weight: 700; margin: 40px 0 16px; letter-spacing: -.01em; }
+
+  .card { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); }
+
+  .steps { display: grid; gap: 16px; }
+  .step { display: grid; gap: 16px; }
+  .step-head { display: flex; gap: 14px; align-items: flex-start; }
+  .num {
+    flex: none; width: 36px; height: 36px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--primary); color: var(--on-primary); font-weight: 700;
+  }
+  .step h3 { margin: 4px 0 4px; font-size: 18px; font-weight: 600; }
+  .step p { margin: 0; color: var(--muted); }
+  .shot { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); background: var(--bg); }
+  .phone { max-width: 300px; margin: 0 auto; border-radius: 36px; border: 6px solid #171717; }
+
+  @media (min-width: 720px) {
+    .steps.two { grid-template-columns: 1fr 1fr; }
+  }
+
+  .lists { display: grid; gap: 16px; }
+  @media (min-width: 720px) { .lists { grid-template-columns: 1fr 1fr; } }
+  .lists h3 { margin: 0 0 12px; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .lists ul { margin: 0; padding-left: 20px; }
+  .lists li { margin: 6px 0; }
+  .lists .note { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+
+  .contact { display: grid; gap: 16px; align-items: center; }
+  @media (min-width: 720px) { .contact { grid-template-columns: 1fr auto; } }
+  .contact p { margin: 0 0 8px; }
+  .contact p:last-child { margin-bottom: 0; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 56px; padding: 0 28px; border-radius: var(--radius-xl);
+    background: var(--primary); color: var(--on-primary); text-decoration: none;
+    font-weight: 600; font-size: 17px; white-space: nowrap;
+  }
+  .btn:hover { background: var(--primary-pressed); }
+  .muted { color: var(--muted); }
+
+  footer { padding: 40px 0 48px; color: var(--muted); font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="brand" href="#" aria-label="Ромашка">
+      <img src="img/icon.png" alt="" width="48" height="48">
+      <b><span lang="ru">Ромашка</span><span lang="en">Romashka</span></b>
+    </a>
+    <div class="seg" role="group" aria-label="Language">
+      <button type="button" data-set-lang="ru" aria-pressed="true">RU</button>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="pill"><span lang="ru">Приложение «Ромашка»</span><span lang="en">Romashka app</span></span>
+    <h1 lang="ru">Удаление аккаунта</h1>
+    <h1 lang="en">Delete your account</h1>
+    <p lang="ru">Аккаунт в приложении «Ромашка» можно удалить в любой момент прямо в приложении — это займёт меньше минуты. Если доступа к приложению нет, напишите нам, и мы удалим аккаунт сами.</p>
+    <p lang="en">You can delete your Romashka account at any time right in the app — it takes less than a minute. If you no longer have the app, write to us and we will delete the account for you.</p>
+  </section>
+
+  <h2><span lang="ru">Как удалить аккаунт в приложении</span><span lang="en">How to delete your account in the app</span></h2>
+
+  <div class="steps">
+    <article class="card step">
+      <div class="step-head">
+        <span class="num">1</span>
+        <div>
+          <h3 lang="ru">Откройте профиль</h3>
+          <h3 lang="en">Open your profile</h3>
+          <p lang="ru">На главном экране нажмите на значок ромашки в правом верхнем углу.</p>
+          <p lang="en">On the home screen, tap the daisy icon in the top-right corner.</p>
+        </div>
+      </div>
+      <div class="shot"><img src="img/step1-home.webp" width="1080" height="268" alt="Главный экран приложения, значок профиля в правом верхнем углу" loading="lazy"></div>
+    </article>
+
+    <div class="steps two">
+      <article class="card step">
+        <div class="step-head">
+          <span class="num">2</span>
+          <div>
+            <h3 lang="ru">Нажмите «Удалить аккаунт»</h3>
+            <h3 lang="en">Tap “Удалить аккаунт” (Delete account)</h3>
+            <p lang="ru">Кнопка находится внизу экрана профиля, под кнопкой «Выйти».</p>
+            <p lang="en">It is at the bottom of the profile screen, below “Выйти” (Log out).</p>
+          </div>
+        </div>
+        <img class="phone" src="img/step2-profile.webp" width="720" height="1353" alt="Экран профиля с кнопкой «Удалить аккаунт»" loading="lazy">
+      </article>
+
+      <article class="card step">
+        <div class="step-head">
+          <span class="num">3</span>
+          <div>
+            <h3 lang="ru">Подтвердите удаление</h3>
+            <h3 lang="en">Confirm</h3>
+            <p lang="ru">Нажмите «Удалить». Аккаунт удаляется сразу, и приложение вернётся на экран входа.</p>
+            <p lang="en">Tap “Удалить” (Delete). The account is deleted immediately and the app returns to the sign-in screen.</p>
+          </div>
+        </div>
+        <img class="phone" src="img/step3-confirm.webp" width="720" height="1353" alt="Диалог подтверждения удаления аккаунта" loading="lazy">
+      </article>
+    </div>
+  </div>
+
+  <h2><span lang="ru">Что происходит с данными</span><span lang="en">What happens to your data</span></h2>
+
+  <div class="lists">
+    <section class="card">
+      <h3><span class="dot" style="background: var(--error)"></span><span lang="ru">Удаляется сразу</span><span lang="en">Deleted immediately</span></h3>
+      <ul lang="ru">
+        <li>имя и номер телефона в профиле;</li>
+        <li>сохранённые адреса доставки;</li>
+        <li>корзина;</li>
+        <li>активные сеансы входа на всех устройствах;</li>
+        <li>токены push-уведомлений.</li>
+      </ul>
+      <ul lang="en">
+        <li>your name and phone number in the profile;</li>
+        <li>saved delivery addresses;</li>
+        <li>your cart;</li>
+        <li>active sign-in sessions on all devices;</li>
+        <li>push notification tokens.</li>
+      </ul>
+      <p class="note" lang="ru">Восстановить удалённый аккаунт нельзя. Если позже войти с тем же номером, будет создан новый пустой аккаунт.</p>
+      <p class="note" lang="en">A deleted account cannot be restored. Signing in with the same number later creates a new, empty account.</p>
+    </section>
+
+    <section class="card">
+      <h3><span class="dot" style="background: var(--success)"></span><span lang="ru">Сохраняется</span><span lang="en">Kept</span></h3>
+      <ul lang="ru">
+        <li>история заказов (состав, сумма, адрес доставки заказа) — для бухгалтерского учёта;</li>
+        <li>отзывы и заявки на работу, если вы их отправляли.</li>
+      </ul>
+      <ul lang="en">
+        <li>order history (items, amount, delivery address of each order) — for accounting;</li>
+        <li>feedback and job applications, if you sent any.</li>
+      </ul>
+      <p class="note" lang="ru">Эти данные больше не связаны с вашим именем и номером телефона в приложении и хранятся в течение срока, который требует законодательство Республики Таджикистан о бухгалтерском учёте. Чтобы удалить отзывы или заявку на работу, напишите нам.</p>
+      <p class="note" lang="en">This data is no longer linked to your name and phone number in the app and is kept for the period required by the accounting laws of the Republic of Tajikistan. To delete feedback or a job application, write to us.</p>
+    </section>
+  </div>
+
+  <h2><span lang="ru">Нет доступа к приложению?</span><span lang="en">No access to the app?</span></h2>
+
+  <section class="card contact">
+    <div>
+      <p lang="ru">Напишите нам с темой «Удаление аккаунта» и укажите номер телефона, на который зарегистрирован аккаунт. Мы удалим аккаунт и ответим в течение 30 дней.</p>
+      <p lang="en">Email us with the subject “Account deletion” and the phone number the account is registered with. We will delete the account and reply within 30 days.</p>
+      <p class="muted" lang="ru">Мы можем попросить подтвердить, что номер принадлежит вам.</p>
+      <p class="muted" lang="en">We may ask you to confirm that the number is yours.</p>
+    </div>
+    <!-- TODO(owner): replace SUPPORT_EMAIL (twice below) with the real support address before publishing. -->
+    <a class="btn" href="mailto:SUPPORT_EMAIL?subject=%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B0%D0%BA%D0%BA%D0%B0%D1%83%D0%BD%D1%82%D0%B0%20%2F%20Account%20deletion">SUPPORT_EMAIL</a>
+  </section>
+
+  <footer>
+    <span lang="ru">© Ромашка. Эта страница относится к приложению «Ромашка» в Google Play и App Store.</span>
+    <span lang="en">© Romashka. This page applies to the Romashka app on Google Play and the App Store.</span>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var buttons = document.querySelectorAll("[data-set-lang]");
+    function apply(lang) {
+      root.lang = lang;
+      document.title = lang === "en" ? "Delete your account — Romashka" : "Удаление аккаунта — Ромашка";
+      buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.setLang === lang)); });
+    }
+    var initial = new URLSearchParams(location.search).get("lang");
+    if (initial !== "ru" && initial !== "en") {
+      try { initial = localStorage.getItem("lang"); } catch (e) { initial = null; }
+    }
+    if (initial !== "ru" && initial !== "en") {
+      initial = (navigator.language || "ru").toLowerCase().indexOf("ru") === 0 ? "ru" : "en";
+    }
+    apply(initial);
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        apply(b.dataset.setLang);
+        try { localStorage.setItem("lang", b.dataset.setLang); } catch (e) {}
+      });
+    });
+  })();
+</script>
+</body>
+</html>
