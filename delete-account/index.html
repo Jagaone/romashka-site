@@ -160,6 +160,9 @@
     font-weight: 600; font-size: 17px; white-space: nowrap;
   }
   .btn:hover { background: var(--primary-pressed); }
+  /* The address is long: on narrow phones let it wrap instead of widening the card. */
+  .contact > * { min-width: 0; }
+  .contact .btn { white-space: normal; overflow-wrap: anywhere; text-align: center; }
   .muted { color: var(--muted); }
 
   footer { padding: 40px 0 48px; color: var(--muted); font-size: 14px; text-align: center; }
