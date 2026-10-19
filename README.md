@@ -10,7 +10,4 @@ Plain HTML, no build step. Fonts (Onest) and brand colours are copied from the A
 (`romashka-android/app/src/main/res/font`, `presentation/common/theme`). Screenshots come from the app with
 personal data blurred.
 
-Before pointing Play Console at the page, replace `SUPPORT_EMAIL` in `delete-account/index.html` with the real
-support address.
-
 Preview locally: `python3 -m http.server 8741` and open http://localhost:8741/delete-account/.
